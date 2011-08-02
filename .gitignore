@@ -1,0 +1,8 @@
+.classpath
+.settings
+.project
+tmp/
+eclipse/
+lib/
+workspace/
+modules/

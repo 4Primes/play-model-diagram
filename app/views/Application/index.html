@@ -1,0 +1,22 @@
+#{extends 'main.html' /}
+#{set title:'Home' /}
+
+#{form @Application.save(), method:'POST'}
+    <div>
+    <label for="username">Username: </label>
+    <input type="text" id="username" name="username" />
+    <span class="error">#{error 'username' /}</span><br>
+    <label for="fullname">Fullname: </label>
+    <input type="text" id="fullname" name="fullname" />
+    <span class="error">#{error 'fullname' /}</span><br>
+    <input type="submit" value="Save">
+    </div>
+#{/form}
+
+#{ifErrors}
+   <br><h0>Please fill all required fields!</h0></br>
+#{/ifErrors}
+
+<ul> #{list users, as:'user'}
+<li>${user.username}</li>
+#{/list}</ul>
