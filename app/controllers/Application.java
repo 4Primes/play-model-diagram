@@ -17,7 +17,8 @@ public class Application extends Controller {
 	public static void index() {
 
 		List<User> users = User.findAll();
-		String json = new GsonBuilder().setPrettyPrinting().create().toJson(MyPlugin.models);
+		String json = new GsonBuilder().setPrettyPrinting().create()
+				.toJson(MyPlugin.models);
 		render(users, json);
 	}
 

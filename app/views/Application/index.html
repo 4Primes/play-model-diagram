@@ -1,39 +1,39 @@
-#{extends 'main.html' /}
-#{set title:'Home' /}
-
-#{form @Application.save(), method:'POST'}
-    <div>
-    <label for="username">Username: </label>
-    <input type="text" id="username" name="username" />
-    <span class="error">#{error 'username' /}</span><br>
-    <label for="fullname">Fullname: </label>
-    <input type="text" id="fullname" name="fullname" />
-    <span class="error">#{error 'fullname' /}</span><br>
-    <input type="submit" value="Save">
-    </div>
-#{/form}
-
-#{ifErrors}
-   <br><h0>Please fill all required fields!</h0></br>
+#{extends 'main.html' /} #{set title:'Home' /} #{form
+@Application.save(), method:'POST'}
+<div>
+	<label for="username">Username: </label> <input type="text"
+		id="username" name="username" /> <span class="error">#{error
+		'username' /}</span><br> <label for="fullname">Fullname: </label> <input
+		type="text" id="fullname" name="fullname" /> <span class="error">#{error
+		'fullname' /}</span><br> <input type="submit" value="Save">
+</div>
+#{/form} #{ifErrors}
+<br>
+<h0>Please fill all required fields!</h0>
+</br>
 #{/ifErrors}
 
-<ul> #{list users, as:'user'}
-<li>${user.username}</li>
-#{/list}</ul>
+<ul>
+	#{list users, as:'user'}
+	<li>${user.username}</li> #{/list}
+</ul>
 
 <pre>
 ${json}
 </pre>
 
 <script>
-var myModels = ${json.raw()};
-//alert(myModels.User.members.events.association.type);
-$.each(myModels, function(index, item){
-	alert(item.name + " " + item.tableName);
-	item.custom = "abuzer";
-	$.each(item.members, function(index, member){
-		alert(member.name + " " + member.type);
+	var myModels = $
+	{
+		json.raw()
+	};
+	//alert(myModels.User.members.events.association.type);
+	$.each(myModels, function(index, item) {
+		alert(item.name + " " + item.tableName);
+		item.custom = "abuzer";
+		$.each(item.members, function(index, member) {
+			alert(member.name + " " + member.type);
+		});
+		alert(item.custom);
 	});
-	alert(item.custom);
-});
 </script>

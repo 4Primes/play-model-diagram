@@ -16,6 +16,9 @@ public class User extends Model {
 	@OneToMany(mappedBy = "author")
 	public List<Event> events = new ArrayList<Event>();
 
+	@ManyToMany
+	public List<Friend> friends = new ArrayList<Friend>();
+
 	public User(String username, String fullname) {
 
 		super();

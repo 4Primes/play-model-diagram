@@ -10,6 +10,6 @@ import java.util.*;
 @Table(name = "my_model2")
 public class MyModel extends Model {
 
-    public Integer sayi;
-    
+	public Integer sayi;
+
 }
