@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import play.Play;
@@ -60,6 +61,14 @@ public class MyPlugin extends PlayPlugin {
 							association.targetModelName = ((Class) fieldArgType)
 									.getSimpleName();
 						}
+						member.association = association;
+					} else if (annotation.annotationType().equals(
+							OneToOne.class)) {
+						OneToOne oneToOne = (OneToOne) annotation;
+						Association association = new Association();
+						association.type = "OneToOne";
+						association.targetModelName = field.getType()
+								.getSimpleName();
 						member.association = association;
 					} else if (annotation.annotationType().equals(
 							ManyToMany.class)) {
