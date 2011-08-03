@@ -20,3 +20,20 @@
 <ul> #{list users, as:'user'}
 <li>${user.username}</li>
 #{/list}</ul>
+
+<pre>
+${json}
+</pre>
+
+<script>
+var myModels = ${json.raw()};
+//alert(myModels.User.members.events.association.type);
+$.each(myModels, function(index, item){
+	alert(item.name + " " + item.tableName);
+	item.custom = "abuzer";
+	$.each(item.members, function(index, member){
+		alert(member.name + " " + member.type);
+	});
+	alert(item.custom);
+});
+</script>

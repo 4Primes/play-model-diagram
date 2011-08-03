@@ -9,19 +9,17 @@ import java.util.*;
 @Entity
 public class User extends Model {
 
-    @Column(nullable = false, unique = true)
-    public String username;
-    public String fullname;
-    
-    @OneToMany(mappedBy="author")
-    public List<Event> events = new ArrayList<Event>();
-    
-    
+	@Column(unique = true)
+	public String username;
+	public String fullname;
 
-    public User(String username, String fullname) {
+	@OneToMany(mappedBy = "author")
+	public List<Event> events = new ArrayList<Event>();
 
-        super();
-        this.username = username;
-        this.fullname = fullname;
-    }
+	public User(String username, String fullname) {
+
+		super();
+		this.username = username;
+		this.fullname = fullname;
+	}
 }
