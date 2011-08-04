@@ -7,22 +7,23 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-public class User extends Model {
+public class User extends CreatedType {
 
-	@Column(unique = true)
-	public String username;
-	public String fullname;
+    @Column(unique = true)
+    public String username;
 
-	@OneToMany(mappedBy = "author")
-	public List<Event> events = new ArrayList<Event>();
+    public String fullname;
 
-	@ManyToMany
-	public List<Friend> friends = new ArrayList<Friend>();
+    @OneToMany(mappedBy = "author")
+    public List<Event> events = new ArrayList<Event>();
 
-	public User(String username, String fullname) {
+    @ManyToMany
+    public List<Friend> friends = new ArrayList<Friend>();
 
-		super();
-		this.username = username;
-		this.fullname = fullname;
-	}
+    public User(String username, String fullname) {
+
+        super();
+        this.username = username;
+        this.fullname = fullname;
+    }
 }

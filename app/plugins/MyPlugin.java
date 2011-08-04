@@ -4,15 +4,16 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -24,20 +25,30 @@ public class MyPlugin extends PlayPlugin {
 
     Association association = new Association();
 
-    public static final Map<String, Model> models = new HashMap<String, Model>();
+    public static final Map<String, Model> models = new TreeMap<String, Model>();
 
     @Override
     public void onApplicationStart() {
 
         List<Class> entities = Play.classloader.getAnnotatedClasses(Entity.class);
+        entities.addAll(Play.classloader.getAnnotatedClasses(MappedSuperclass.class));
+        entities.add(play.db.jpa.Model.class);
         for (Class clazz : entities) {
             String tableName = clazz.getSimpleName();
+
             Annotation classAnnotation = clazz.getAnnotation(Table.class);
             if (classAnnotation != null) {
                 if (!"".equals(((Table) classAnnotation).name()))
                     tableName = ((Table) classAnnotation).name();
             }
+
             Model model = new Model(clazz.getSimpleName(), tableName);
+
+            if (clazz.getSuperclass().isAnnotationPresent(MappedSuperclass.class)) {
+                model.superClassName = clazz.getSuperclass().getSimpleName();
+            }
+            model.isMappedSuperClass = clazz.isAnnotationPresent(MappedSuperclass.class);
+
             Field[] fields = clazz.getDeclaredFields();
             for (Field field : fields) {
                 Member member = new Member(field.getName(), field.getType());

@@ -5,33 +5,46 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class Model {
-	String name;
-	String tableName;
-	private Map<String, Member> members;
 
-	public Model(String name) {
-		this(name, name);
-	}
+    String name;
 
-	public Model(String name, String tableName) {
-		this.name = name;
-		this.tableName = tableName;
-		this.members = new TreeMap<String, Member>();
-	}
+    String tableName;
 
-	public void addMember(String name, Member member) {
-		members.put(name, member);
-	}
+    String superClassName;
 
-	public Member getMember(String name) {
-		return members.get(name);
-	}
+    boolean isMappedSuperClass = false;
 
-	public Collection<Member> getMembers() {
-		return members.values();
-	}
+    private Map<String, Member> members;
 
-	public void removeMember(String name) {
-		members.remove(name);
-	}
+    public Model(String name) {
+
+        this(name, name);
+    }
+
+    public Model(String name, String tableName) {
+
+        this.name = name;
+        this.tableName = tableName;
+        this.members = new TreeMap<String, Member>();
+    }
+
+    public void addMember(String name, Member member) {
+
+        members.put(name, member);
+    }
+
+    public Member getMember(String name) {
+
+        return members.get(name);
+    }
+
+    public Collection<Member> getMembers() {
+
+        return members.values();
+    }
+
+    public void removeMember(String name) {
+
+        members.remove(name);
+    }
 }
