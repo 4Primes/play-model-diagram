@@ -6,3 +6,6 @@ eclipse/
 lib/
 workspace/
 modules/
+commands.py
+commands.pyc
+dist/

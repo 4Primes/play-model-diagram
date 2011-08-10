@@ -1,5 +1,5 @@
+# Default model-diagram messages
 # You can specialize this file for each language.
-# For example, for French create a messages.fr file
-#
+# For exemple, for french create a messages.fr file
 
-validation.required = Required Field!
+#model-diagram.name=model-diagram
