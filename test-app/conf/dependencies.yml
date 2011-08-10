@@ -13,7 +13,7 @@ repositories:
                    descriptor: ${application.path}/../../[module]/conf/dependencies.yml
                    artifact:   ${application.path}/../../[module]
                    contains:
-                        - play -> associations
+                        - play -> *
 
               - playLocalModules:
                    type:       local

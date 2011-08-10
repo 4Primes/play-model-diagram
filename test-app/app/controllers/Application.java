@@ -3,7 +3,7 @@ package controllers;
 import play.*;
 import play.data.validation.Required;
 import play.mvc.*;
-import plugins.MyPlugin;
+import plugins.ModelDiagramPlugin;
 
 import java.util.*;
 
@@ -18,7 +18,7 @@ public class Application extends Controller {
 
 		List<User> users = User.findAll();
 		String json = new GsonBuilder().setPrettyPrinting().create()
-				.toJson(MyPlugin.models);
+				.toJson(ModelDiagramPlugin.models);
 		render(users, json);
 	}
 
@@ -37,7 +37,7 @@ public class Application extends Controller {
 	}
 
 	public static void model() {
-		String json = new Gson().toJson(MyPlugin.models);
+		String json = new Gson().toJson(ModelDiagramPlugin.models);
 		render();
 	}
 }

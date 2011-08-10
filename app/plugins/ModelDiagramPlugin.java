@@ -20,12 +20,20 @@ import javax.persistence.Table;
 
 import play.Play;
 import play.PlayPlugin;
+import play.mvc.Router;
 
-public class MyPlugin extends PlayPlugin {
+public class ModelDiagramPlugin extends PlayPlugin {
 
     Association association = new Association();
 
     public static final Map<String, Model> models = new TreeMap<String, Model>();
+    
+    @Override
+    public void onRoutesLoaded() {
+    
+        Router.addRoute("GET", "/@models/?", "modeldiagram.ModelDiagram.index");
+        super.onRoutesLoaded();
+    }
 
     @Override
     public void onApplicationStart() {
