@@ -1,0 +1,4 @@
+cd test-app
+play deps
+play run
+http://localhost:9000/@model
