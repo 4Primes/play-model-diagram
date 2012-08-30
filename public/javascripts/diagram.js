@@ -4,22 +4,22 @@ var drawModels=function(myModels) {
     var w = 1200,
         h = 800,
         r = Raphael(0, 0, w, h),
-        say = 0,
-        say2, rad, sayici = 0,
-        sayici2 = 0,
-        tip = [["CreatedType", 0],
+        num = 0,
+        num2, rad, counter = 0,
+        counter2 = 0,
+        type = [["CreatedType", 0],
                ["Event", 1],
                ["Friend", 2],
                ["Model", 3],
                ["MyModel", 4],
                ["User", 5]],
-        tip2 = ["ManyToMany", "OneToMany", "ManyToOne", "OneToOne", "Extend"],
-        renk = ["blue", "fuchsia", "black", "lime", "red"],
-        yerdiz = new Array(),
-        kutu = new Array(),
+        type2 = ["ManyToMany", "OneToMany", "ManyToOne", "OneToOne", "Extend"],
+        color = ["blue", "fuchsia", "black", "lime", "red"],
+        connArr = new Array(),
+        box = new Array(),
         diox = new Array(),
         dioy = new Array(),
-        yerdiz2 = new Array(),
+        connArr2 = new Array(),
         Model = function(x, y) {
             this.elements = new Array();
             this.add = function(element) {
@@ -32,7 +32,7 @@ var drawModels=function(myModels) {
             this.addMember = function(text) {
                 var x = this.x + 10;
                 var y = this.y + (this.elements.length - 1) * 20;
-                if (this.yaz == 2) {
+                if (this.font == 2) {
                     if (this.map == 1) var element = r.text(x + this.width / 2 - 10, y, text);
                     else {
                         if (this.map2 == 1) element = r.text(x + 10, y, text);
@@ -75,46 +75,46 @@ var drawModels=function(myModels) {
         };
 
     $.each(myModels, function(index, item) {
-        rad = Math.PI * say / 3;
-        say2 = 2;
-        kutu[say] = new Model(330 + 300 * Math.cos(rad), 330 + 300 * Math.sin(rad));
-        kutu[say].cer = 1;
-        kutu[say].yaz = 2;
-        kutu[say].map = 0;
-        kutu[say].map2 = 0;
+        rad = Math.PI * num / 3;
+        num2 = 2;
+        box[num] = new Model(330 + 300 * Math.cos(rad), 330 + 300 * Math.sin(rad));
+        box[num].cer = 1;
+        box[num].font = 2;
+        box[num].map = 0;
+        box[num].map2 = 0;
         if (item.isMappedSuperClass == true) {
-            kutu[say].map2 = 1;
-            kutu[say].addMember("<<MappedSuperclass>>");
-            kutu[say].cer = 2;
-            kutu[say].map = 1;
+            box[num].map2 = 1;
+            box[num].addMember("<<MappedSuperclass>>");
+            box[num].cer = 2;
+            box[num].map = 1;
         }
         for (i = 0; i < 6; i++) {
-            if (item.superClassName == tip[i][0]) {
-                yerdiz2[sayici2] = [say, i, 4];
-                sayici2++;
+            if (item.superClassName == type[i][0]) {
+                connArr2[counter2] = [num, i, 4];
+                counter2++;
             }
         }
 
-        kutu[say].addMember(item.name);
-        kutu[say].yaz = 1;
+        box[num].addMember(item.name);
+        box[num].font = 1;
         $.each(item.members, function(index, member) {
-            kutu[say].addMember(member.name + " : " + member.type);
+            box[num].addMember(member.name + " : " + member.type);
             if (member.association != undefined) {
                 for (i = 0; i < 6; i++) {
-                    if (member.association.targetModelName == tip[i][0]) {
+                    if (member.association.targetModelName == type[i][0]) {
                         for (x = 0; x < 4; x++) {
-                            if (member.association.type == tip2[x]) {
-                                if (kutu[say].cer == 2) yerdiz[sayici] = [say2 + 1, say, i, x];
-                                else yerdiz[sayici] = [say2, say, i, x];
+                            if (member.association.type == type2[x]) {
+                                if (box[num].cer == 2) connArr[counter] = [num2 + 1, num, i, x];
+                                else connArr[counter] = [num2, num, i, x];
                             }
                         }
                     }
                 }
-                sayici++;
+                counter++;
             }
-            say2++;
+            num2++;
         });
-        say++;
+        num++;
     });
 
     function start() {
@@ -138,8 +138,8 @@ var drawModels=function(myModels) {
             };
             item.attr(attr);
         }
-        bag();
-        bag2();
+        arrow();
+        extendarrow();
     };
 
     function up() {
@@ -151,281 +151,282 @@ var drawModels=function(myModels) {
         }
     };
 
-    function bag() {
-        for (i = 0; i < sayici; i++) {
-            var kt1 = kutu[dizi[i].md1].r.getBBox(),
-                kt2 = kutu[dizi[i].md2].r.getBBox(),
-                bx, by, ox, sx, sy, kx;
-            by = kt1.y + dizi[i].uye1 * 20;
-            sy = kt2.y + 3 + dizi[i].uye2 * 4;
+    function arrow() {
+        for (i = 0; i < counter; i++) {
+            var kt1 = box[modelArray[i].md1].r.getBBox(),
+                kt2 = box[modelArray[i].md2].r.getBBox(),
+                sx, sy, ox, ex, ey, kx;
+            sy = kt1.y + modelArray[i].member1 * 20;
+            ey = kt2.y + 3 + modelArray[i].member2 * 4;
             if (kt1.x < kt2.x) {
-                bx = kt1.x + kt1.width;
+                sx = kt1.x + kt1.width;
                 if (kt1.x + kt1.width < kt2.x) {
                     ox = (kt1.x + kt1.width + kt2.x) / 2;
-                    sx = kt2.x;
+                    ex = kt2.x;
                 }
                 else {
-                    sx = kt2.x + kt2.width;
-                    if (sx > bx) ox = sx + 20;
-                    else ox = bx + 20;
+                    ex = kt2.x + kt2.width;
+                    if (ex > sx) ox = ex + 20;
+                    else ox = sx + 20;
                 }
             }
             else {
-                bx = kt1.x;
-                if (bx > kt2.x + kt2.width) {
+                sx = kt1.x;
+                if (sx > kt2.x + kt2.width) {
                     ox = (kt1.x + kt2.x + kt2.width) / 2;
-                    sx = kt2.x + kt2.width;
+                    ex = kt2.x + kt2.width;
                 }
                 else {
                     ox = kt2.x - 20;
-                    sx = kt2.x;
+                    ex = kt2.x;
                 }
             }
-            for (j = 0; j < sayici; j++)
+            for (j = 0; j < counter; j++)
             if (diox[j] == ox && j != i) {
-                if (bx > sx) {
-                    if (ox < sx || sx < ox - 5 || bx < ox - 5) ox -= 5;
+                if (sx > ex) {
+                    if (ox < ex || ex < ox - 5 || sx < ox - 5) ox -= 5;
                 }
                 else {
-                    if (bx == sx || bx < ox - 5 || sx < ox - 5) ox -= 5;
+                    if (sx == ex || sx < ox - 5 || ex < ox - 5) ox -= 5;
                 }
             }
             diox[i] = ox;
-            if (ox < sx) kx = sx - 10;
-            else kx = sx + 10;
-            dizi[i].yol1.remove();
-            dizi[i].yol2.remove();
-            dizi[i].yol3.remove();
-            dizi[i].yol4.remove();
-            dizi[i].yol5.remove();
-            dizi[i].yol6.remove();
-            dizi[i].yol1 = Cizgi(bx, by, ox, by).attr({
-                stroke: renk[dizi[i].rk]
+            if (ox < ex) kx = ex - 10;
+            else kx = ex + 10;
+            modelArray[i].route1.remove();
+            modelArray[i].route2.remove();
+            modelArray[i].route3.remove();
+            modelArray[i].route4.remove();
+            modelArray[i].route5.remove();
+            modelArray[i].route6.remove();
+            modelArray[i].route1 = toPath(sx, sy, ox, sy).attr({
+                stroke: color[modelArray[i].rk]
             });
-            dizi[i].yol2 = Cizgi(ox, by, ox, sy).attr({
-                stroke: renk[dizi[i].rk]
+            modelArray[i].route2 = toPath(ox, sy, ox, ey).attr({
+                stroke: color[modelArray[i].rk]
             });
-            dizi[i].yol3 = Cizgi(ox, sy, kx, sy).attr({
-                stroke: renk[dizi[i].rk]
+            modelArray[i].route3 = toPath(ox, ey, kx, ey).attr({
+                stroke: color[modelArray[i].rk]
             });
-            dizi[i].yol4 = Cizgi(kx, sy + 5, sx, sy).attr({
-                stroke: renk[dizi[i].rk]
+            modelArray[i].route4 = toPath(kx, ey + 5, ex, ey).attr({
+                stroke: color[modelArray[i].rk]
             });
-            dizi[i].yol5 = Cizgi(kx, sy - 5, sx, sy).attr({
-                stroke: renk[dizi[i].rk]
+            modelArray[i].route5 = toPath(kx, ey - 5, ex, ey).attr({
+                stroke: color[modelArray[i].rk]
             });
-            dizi[i].yol6 = Cizgi(kx, sy - 5, kx, sy + 5).attr({
-                stroke: renk[dizi[i].rk]
+            modelArray[i].route6 = toPath(kx, ey - 5, kx, ey + 5).attr({
+                stroke: color[modelArray[i].rk]
             });
         }
     };
 
-    function bag2() {
-        for (i = 0; i < sayici; i++) {
-            var kt1 = kutu[dizi2[i].md1].r.getBBox(),
-                kt2 = kutu[dizi2[i].md2].r.getBBox(),
-                bx, by, oy, sx, sy, ky;
-            by = kt1.y;
-            bx = kt1.x + kt1.width / 2;
-            sx = kt2.x + 10 * dizi2[i].uye2;
+    function extendarrow() {
+    	alert(counter);
+        for (i = 0; i < counter; i++) {
+            var kt1 = box[modelArray2[i].md1].r.getBBox(),
+                kt2 = box[modelArray2[i].md2].r.getBBox(),
+                sx, sy, oy, ex, ey, ky;
+            sy = kt1.y;
+            sx = kt1.x + kt1.width / 2;
+            ex = kt2.x + 10 * modelArray2[i].member2;
             if (kt1.y > kt2.y) {
                 if (kt1.y > kt2.y + kt2.height) {
                     oy = (kt1.y + kt2.height + kt2.y) / 2;
-                    sy = kt2.y + kt2.height;
-                    ky = sy + 10;
+                    ey = kt2.y + kt2.height;
+                    ky = ey + 10;
                 }
                 else {
-                    sy = kt2.y;
-                    ky = sy - 10;
-                    oy = sy - 20;
+                    ey = kt2.y;
+                    ky = ey - 10;
+                    oy = ey - 20;
                 }
             }
             else {
-                sy = kt2.y;
-                ky = sy - 10;
+                ey = kt2.y;
+                ky = ey - 10;
                 if (kt1.y + kt1.height < kt2.y) {
-                    by += kt1.height;
+                    sy += kt1.height;
                     oy = (kt1.y + kt1.height + kt2.y) / 2;
                 }
                 else oy = kt1.y - 20;
             }
-            for (j = 0; j < sayici2; j++)
-            if (dioy[j] == oy && i != j && oy - 8 > sy) oy -= 8;
+            for (j = 0; j < counter2; j++)
+            if (dioy[j] == oy && i != j && oy - 8 > ey) oy -= 8;
             dioy[i] = oy;
-            dizi2[i].yol1.remove();
-            dizi2[i].yol2.remove();
-            dizi2[i].yol3.remove();
-            dizi2[i].yol4.remove();
-            dizi2[i].yol5.remove();
-            dizi2[i].yol6.remove();
-            dizi2[i].yol1 = Cizgi(bx, by, bx, oy).attr({
-                stroke: renk[dizi2[i].rk]
+            modelArray2[i].route1.remove();
+            modelArray2[i].route2.remove();
+            modelArray2[i].route3.remove();
+            modelArray2[i].route4.remove();
+            modelArray2[i].route5.remove();
+            modelArray2[i].route6.remove();
+            modelArray2[i].route1 = toPath(sx, sy, sx, oy).attr({
+                stroke: color[modelArray2[i].rk]
             });
-            dizi2[i].yol2 = Cizgi(bx, oy, sx, oy).attr({
-                stroke: renk[dizi2[i].rk]
+            modelArray2[i].route2 = toPath(sx, oy, ex, oy).attr({
+                stroke: color[modelArray2[i].rk]
             });
-            dizi2[i].yol3 = Cizgi(sx, oy, sx, ky).attr({
-                stroke: renk[dizi2[i].rk]
+            modelArray2[i].route3 = toPath(ex, oy, ex, ky).attr({
+                stroke: color[modelArray2[i].rk]
             });
-            dizi2[i].yol4 = Cizgi(sx + 5, ky, sx, sy).attr({
-                stroke: renk[dizi2[i].rk]
+            modelArray2[i].route4 = toPath(ex + 5, ky, ex, ey).attr({
+                stroke: color[modelArray2[i].rk]
             });
-            dizi2[i].yol5 = Cizgi(sx - 5, ky, sx, sy).attr({
-                stroke: renk[dizi2[i].rk]
+            modelArray2[i].route5 = toPath(ex - 5, ky, ex, ey).attr({
+                stroke: color[modelArray2[i].rk]
             });
-            dizi2[i].yol6 = Cizgi(sx - 5, ky, sx + 5, ky).attr({
-                stroke: renk[dizi2[i].rk]
+            modelArray2[i].route6 = toPath(ex - 5, ky, ex + 5, ky).attr({
+                stroke: color[modelArray2[i].rk]
             });
         }
-    };
+   };
 
-    var a, b, c, d, e, dizi = new Array(),
-        dizi2 = new Array();
+    var a, b, c, d, e, modelArray = new Array(),
+        modelArray2 = new Array();
 
-    for (x = 0; x < sayici; x++) {
-        a = yerdiz[x][0];
+    for (x = 0; x < counter; x++) {
+        a = connArr[x][0];
         b = (1 + Math.round(Math.random() * 11)) % 8;
-        c = yerdiz[x][1];
-        d = yerdiz[x][2];
-        e = yerdiz[x][3];
-        dizi[x] = new ciz(a, b, c, d, e, x);
-    }
-    for (x = 0; x < sayici2; x++) {
+        c = connArr[x][1];
+        d = connArr[x][2];
+        e = connArr[x][3];
+        modelArray[x] = new line(a, b, c, d, e, x);
+   }
+    for (x = 0; x < counter2; x++) {
         b = (1 + Math.round(Math.random() * 15));
-        c = yerdiz2[x][0];
-        d = yerdiz2[x][1];
-        e = yerdiz2[x][2];
-        dizi2[x] = new ciz2(b, c, d, e, x);
-    }
+        c = connArr2[x][0];
+        d = connArr2[x][1];
+        e = connArr2[x][2];
+        modelArray2[x] = new extendLine(b, c, d, e, x);
+   }
 
-    function ciz(a, b, c, d, e, limit) {
-        this.uye1 = a, this.uye2 = b, this.md1 = c, this.md2 = d, this.rk = e;
-        var kt1 = kutu[this.md1].r.getBBox(),
-            kt2 = kutu[this.md2].r.getBBox(),
-            bx, by, ox, sx, sy, kx;
-        by = kt1.y + this.uye1 * 20;
-        sy = kt2.y + 3 + this.uye2 * 4;
+    function line(a, b, c, d, e, limit) {
+        this.member1 = a, this.member2 = b, this.md1 = c, this.md2 = d, this.rk = e;
+        var kt1 = box[this.md1].r.getBBox(),
+            kt2 = box[this.md2].r.getBBox(),
+            sx, sy, ox, ex, ey, kx;
+        sy = kt1.y + this.member1 * 20;
+        ey = kt2.y + 3 + this.member2 * 4;
         if (kt1.x < kt2.x) {
-            bx = kt1.x + kt1.width;
+            sx = kt1.x + kt1.width;
             if (kt1.x + kt1.width < kt2.x) {
                 ox = (kt1.x + kt1.width + kt2.x) / 2;
-                sx = kt2.x;
+                ex = kt2.x;
             }
             else {
-                sx = kt2.x + kt2.width;
-                if (sx > bx) ox = sx + 20;
-                else ox = bx + 20;
+                ex = kt2.x + kt2.width;
+                if (ex > sx) ox = ex + 20;
+                else ox = sx + 20;
             }
         }
         else {
-            bx = kt1.x;
-            if (bx > kt2.x + kt2.width) {
+            sx = kt1.x;
+            if (sx > kt2.x + kt2.width) {
                 ox = (kt1.x + kt2.x + kt2.width) / 2;
-                sx = kt2.x + kt2.width;
+                ex = kt2.x + kt2.width;
             }
             else {
                 ox = kt2.x - 20;
-                sx = kt2.x;
+                ex = kt2.x;
             }
         }
         for (i = 0; i < limit; i++)
         if (diox[i] == ox) {
-            if (bx > sx) {
-                if (ox < sx || sx < ox - 5 || bx < ox - 5) ox -= 5;
+            if (sx > ex) {
+                if (ox < ex || ex < ox - 5 || sx < ox - 5) ox -= 5;
             }
             else {
-                if (bx == sx || bx < ox - 5 || sx < ox - 5) ox -= 5;
+                if (sx == ex || sx < ox - 5 || ex < ox - 5) ox -= 5;
             }
         }
         diox[limit] = ox;
-        if (ox < sx) kx = sx - 10;
-        else kx = sx + 10;
-        this.yol1 = Cizgi(bx, by, ox, by).attr({
-            stroke: renk[this.rk]
+        if (ox < ex) kx = ex - 10;
+        else kx = ex + 10;
+        this.route1 = toPath(sx, sy, ox, sy).attr({
+            stroke: color[this.rk]
         });
-        this.yol2 = Cizgi(ox, by, ox, sy).attr({
-            stroke: renk[this.rk]
+        this.route2 = toPath(ox, sy, ox, ey).attr({
+            stroke: color[this.rk]
         });
-        this.yol3 = Cizgi(ox, sy, kx, sy).attr({
-            stroke: renk[this.rk]
+        this.route3 = toPath(ox, ey, kx, ey).attr({
+            stroke: color[this.rk]
         });
-        this.yol4 = Cizgi(kx, sy + 5, sx, sy).attr({
-            stroke: renk[this.rk]
+        this.route4 = toPath(kx, ey + 5, ex, ey).attr({
+            stroke: color[this.rk]
         });
-        this.yol5 = Cizgi(kx, sy - 5, sx, sy).attr({
-            stroke: renk[this.rk]
+        this.route5 = toPath(kx, ey - 5, ex, ey).attr({
+            stroke: color[this.rk]
         });
-        this.yol6 = Cizgi(kx, sy - 5, kx, sy + 5).attr({
-            stroke: renk[this.rk]
+        this.route6 = toPath(kx, ey - 5, kx, ey + 5).attr({
+            stroke: color[this.rk]
         });
     };
 
-    function ciz2(b, c, d, e, limit) {
-        this.uye2 = b, this.md1 = c, this.md2 = d, this.rk = e;
-        var kt1 = kutu[this.md1].r.getBBox(),
-            kt2 = kutu[this.md2].r.getBBox(),
-            bx, by, oy, sx, sy, ky;
-        by = kt1.y;
-        bx = kt1.x + kt1.width / 2;
-        sx = kt2.x + 10 * this.uye2;
+    function extendLine(b, c, d, e, limit) {
+        this.member2 = b, this.md1 = c, this.md2 = d, this.rk = e;
+        var kt1 = box[this.md1].r.getBBox(),
+            kt2 = box[this.md2].r.getBBox(),
+            sx, sy, oy, ex, ey, ky;
+        sy = kt1.y;
+        sx = kt1.x + kt1.width / 2;
+        ex = kt2.x + 10 * this.member2;
         if (kt1.y > kt2.y) {
             if (kt1.y > kt2.y + kt2.height) {
                 oy = (kt1.y + kt2.height + kt2.y) / 2;
-                sy = kt2.y + kt2.height;
-                ky = sy + 10;
+                ey = kt2.y + kt2.height;
+                ky = ey + 10;
             }
             else {
-                sy = kt2.y;
-                ky = sy - 10;
-                oy = sy - 20;
+                ey = kt2.y;
+                ky = ey - 10;
+                oy = ey - 20;
             }
         }
         else {
-            sy = kt2.y;
-            ky = sy - 10;
+            ey = kt2.y;
+            ky = ey - 10;
             if (kt1.y + kt1.height < kt2.y) {
-                by += kt1.height;
+                sy += kt1.height;
                 oy = (kt1.y + kt1.height + kt2.y) / 2;
             }
             else oy = kt1.y - 20;
         }
         for (i = 0; i < limit; i++)
-        if (dioy[i] == oy && oy - 8 > sy) oy -= 8;
+        if (dioy[i] == oy && oy - 8 > ey) oy -= 8;
         dioy[limit] = oy;
-        this.yol1 = Cizgi(bx, by, bx, oy).attr({
-            stroke: renk[this.rk]
+        this.route1 = toPath(sx, sy, sx, oy).attr({
+            stroke: color[this.rk]
         });
-        this.yol2 = Cizgi(bx, oy, sx, oy).attr({
-            stroke: renk[this.rk]
+        this.route2 = toPath(sx, oy, ex, oy).attr({
+            stroke: color[this.rk]
         });
-        this.yol3 = Cizgi(sx, oy, sx, ky).attr({
-            stroke: renk[this.rk]
+        this.route3 = toPath(ex, oy, ex, ky).attr({
+            stroke: color[this.rk]
         });
-        this.yol4 = Cizgi(sx + 5, ky, sx, sy).attr({
-            stroke: renk[this.rk]
+        this.route4 = toPath(ex + 5, ky, ex, ey).attr({
+            stroke: color[this.rk]
         });
-        this.yol5 = Cizgi(sx - 5, ky, sx, sy).attr({
-            stroke: renk[this.rk]
+        this.route5 = toPath(ex - 5, ky, ex, ey).attr({
+            stroke: color[this.rk]
         });
-        this.yol6 = Cizgi(sx - 5, ky, sx + 5, ky).attr({
-            stroke: renk[this.rk]
+        this.route6 = toPath(ex - 5, ky, ex + 5, ky).attr({
+            stroke: color[this.rk]
         });
     };
 
-    function Cizgi(BX, BY, SX, SY) {
-        return r.path("M" + BX + " " + BY + " L" + SX + " " + SY);
+    function toPath(sx, sy, ex, ey) {
+        return r.path("M" + sx + " " + sy + " L" + ex + " " + ey);
     }
 
     r.rect(5, 5, 85, 70).attr({
         fill: "white",
         stroke: "navy"
     });
-    var bil;
+    var info;
     for (x = 0; x < 5; x++) {
-        bil = r.text(45, 12 + 14 * x, tip2[x]).attr({
-            stroke: renk[x]
+        info = r.text(45, 12 + 14 * x, type2[x]).attr({
+            stroke: color[x]
         });
-        bil.attr("font-size", "12px");
+        info.attr("font-size", "12px");
     }
 
 };
