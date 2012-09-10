@@ -39,7 +39,6 @@ public class ModelDiagramPlugin extends PlayPlugin {
 
     @Override
     public void onApplicationStart() {
-    	//--Models
     	int len=1;
         List<Class> entities = Play.classloader.getAnnotatedClasses(Entity.class);
         entities.addAll(Play.classloader.getAnnotatedClasses(MappedSuperclass.class));
