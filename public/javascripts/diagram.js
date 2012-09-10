@@ -221,7 +221,6 @@ var drawModels=function(myModels) {
     };
 
     function extendarrow() {
-    	alert(counter);
         for (i = 0; i < counter; i++) {
             var kt1 = box[modelArray2[i].md1].r.getBBox(),
                 kt2 = box[modelArray2[i].md2].r.getBBox(),

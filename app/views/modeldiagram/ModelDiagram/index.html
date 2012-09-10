@@ -6,10 +6,19 @@
 <!-- <pre> -->
 <!-- ${json} -->
 <!-- </pre> -->
-
+<div id="myDia"></div>
 <script>
+var uml = Joint.dia.uml;
+Joint.paper("myDia", 1200, 1200);
 	var myModels = ${json.raw()};
-	drawModels(myModels);
+	console.log(myModels);
+	console.log("-------");
+	var json=JSON.stringify(myModels);
+	json=json.split('_4p_').join('-');
+	console.log(json);
+	Joint.dia.parse(json);
+	
+	//drawModels(myModels);
 // 	//alert(myModels.User.members.events.association.type);
 // 	$.each(myModels, function(index, item) {
 // 		alert(item.name + " " + item.tableName);
