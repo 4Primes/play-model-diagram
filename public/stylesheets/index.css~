@@ -1,0 +1,7 @@
+<style type='text/css'>
+    svg{
+    width:  1200px;
+    height: 800px;
+    border: solid 1px #000;
+    }
+</style>
