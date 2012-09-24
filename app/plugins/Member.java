@@ -15,6 +15,8 @@ public class Member {
     String type;
 
     Association association;
+    
+    int length;
 
     public Member(String name, Class<?> type) {
 
@@ -22,6 +24,7 @@ public class Member {
         this.name = name;
         this.columnName = name;
         this.type = type.getSimpleName();
+        this.length= name.length();
     }
 
 }

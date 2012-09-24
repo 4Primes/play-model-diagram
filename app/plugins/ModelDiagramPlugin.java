@@ -66,9 +66,10 @@ public class ModelDiagramPlugin extends PlayPlugin {
                     if (annotation.annotationType().equals(Id.class)) {
                         member.id = true;
                     } else if (annotation.annotationType().equals(Column.class)) {
-                        Column column = (Column) annotation;
+                        Column column = (Column) annotation;                      
                         member.nullable = column.nullable();
                         member.unique = column.unique();
+                        member.length=column.length();
                         if (!"".equals(column.name()))
                             member.columnName = column.name();
                     } else if (annotation.annotationType().equals(JoinColumn.class)) {

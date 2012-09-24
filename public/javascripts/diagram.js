@@ -1,52 +1,91 @@
 
-
-var drawModels=function() {
-    var paper = Raphael(20, 20, 1200, 800),
+function drawModels()
+{
+    var paper = Raphael(0, 0, 1200, 800),
         connectionType = ["ManyToMany", "OneToMany", "ManyToOne", "OneToOne", "Extend"],
         color = ["blue", "fuchsia", "black", "lime", "red"],
         models = new Array(),
         connections = new Array(),
 		arrows = new Array(),
-		diox = new Array(),
-		dioy =new Array(),
-        counter = 0;
+		diox = new Array();
 
-    function MODEL(x, y, z) {
+    function MODEL(x, y) {
         this.elements = new Array();
+        var elmCount=0;
         this.add = function(element) {
+        	
+        	if(element.type=="text")
+        	{
+        		elmCount++;
+        	}
             element.drag(move, start, up);
             this.elements.push(element);
-            element.group = this.elements;
-			element.num = z;
-            this.r.attr("height", ((this.elements.length - 1) * 20));
-            this.p.attr("height", (10 + 20 * this.header));
+            element.group = this.elements; 
+            this.p.attr("height", (15*this.header + 13 ));
+            this.r.attr("height", ((elmCount) * 15)+ 13 );
         };
-        this.addMember = function(text, mid, font) {
-            var x, y, element;
+        this.addMember = function(text, mid, font,isNullable,isUnique,isId) {
+            var x, y, element,iconU,iconN,iconId,icnLen=0;
             if (mid == 0) {
-                y = this.y + (this.elements.length) * 20;
-                x = this.x + 10;
-                element = paper.text(x, y, text);
+                y = this.y+ 5 + (elmCount+1) * 15+ 15;
+                x = this.x;
+
+                
+                if(isNullable){
+                	icnLen+=10;
+                	iconN=paper.image("/public/images/N.ico",x,y-5,10,10);
+                	x+=10;
+                	this.add(iconN);
+            		iconN.attr({
+                		cursor: "move"
+            		});
+            	}
+            	if (isUnique){
+            		icnLen+=10;
+            		iconU=paper.image("/public/images/U.ico",x,y-5,10,10);	
+            		x+=10;
+            		this.add(iconU);
+            		iconN.attr({
+                		cursor: "move"
+            		});
+
+            	}
+            	if (isId){
+            		icnLen+=10;
+            		iconId=paper.image("/public/images/I.ico",x,y-5,10,10);	
+            		x+=10;
+            		this.add(iconId);
+            		iconId.attr({
+                		cursor: "move"
+            		});
+
+            	}
+            	element = paper.text(x+2, y, text);
             } else if (mid == 2) {
-                y = this.y + 20;
-                x = this.x + 10;
+                y = this.y + 10;
+                x = this.x+5;
                 element = paper.text(x, y, text);
-                element.attr("fill","blue");
+                element.attr("fill","black");
+				this.p.attr({fill: "#89F5A6"});
             }
             else {
                 x = y = 0;
                 element = paper.text(x, y, text);
-                x = this.x + (this.width - element.getBBox().width) / 2 - 10;
+				if(text.length*7 + 10 < this.width  )
+                    x = this.x + (this.width - text.length*9) / 2 ;
+			    else 
+			    	x = this.x + 5;
                 element.remove();
-                y = this.y + this.header * 20;
+                y = this.y + 5 + this.header * 10;
                 element = paper.text(x, y, text);
             }
             element.attr("text-anchor", "start");
             element.attr("font-size", font);
+			element.attr("font-family", "courier new")
             
             this.add(element);
-            if (element.getBBox().width > (this.width - this.widthOffset)) {
-                this.width = element.getBBox().width + this.widthOffset;
+            if (element.getBBox().width+icnLen > (this.width - this.widthOffset)) {
+                this.width = element.getBBox().width + icnLen + this.widthOffset;
                 this.r.attr("width", this.width);
                 this.p.attr("width", this.width);
             }
@@ -54,10 +93,11 @@ var drawModels=function() {
                 cursor: "move"
             });
         }
+		headerColor = this.headerColor
         this.x = x;
         this.y = y;
         this.width = 10;
-        this.widthOffset = 20;
+        this.widthOffset = 10;
         this.r = paper.rect(x, y, this.width, 10, 5).attr({
             fill: "white",
             opacity: 1,
@@ -104,77 +144,6 @@ var drawModels=function() {
             });
         }
     };
-
-    $.each(myModels, function(index, item) {
-        var rad = Math.PI * counter / 3;
-        models[counter] = new MODEL(30+300 + 300 * Math.cos(rad), 300 + 300 * Math.sin(rad),counter);
-        models[counter].header = 1;
-        if (item.isMappedSuperClass == true) {
-            models[counter].addMember("<<MappedSuperclass>>", 2, "18px");
-            models[counter].header = 2;
-        }
-		models[counter].name = item.name;
-        $.each(item.members, function(index, member) {
-            models[counter].addMember(member.name + " : " + member.type, 0, "14px");
-        });
-        models[counter].addMember(item.name, 1, "16px");
-        counter++;
-    });
-	
-	
-    arrowCounter=0;
-	counter=0;
-    var memberCounter, arrowCounter, multiple;
-    $.each(myModels, function(index, item) 
-    {
-        connections[arrowCounter] = new Array();
-		arrows[arrowCounter] = new Array();
-		memberCounter=2;
-		multiple = 14;
-		if (item.isMappedSuperClass == true) {
-		    multiple =34;
-            memberCounter = 3;
-	    }
-		for(x=0;x<models.length;x++){
-            if (item.superClassName == models[x].name){
-		        connections[arrowCounter]= [counter,0,x,4, models[x].r.getBBox().width / (2 + Math.random() * 10),"extend"];
-				arrows[arrowCounter]=new ARROW(arrowCounter);
-				arrowCounter++;
-				break;
-				}
-		}		
-         $.each(item.members, function(index, member) 
-         {
-             if (member.association != undefined) 
-             {
-                for (x = 0; x < models.length; x++) 
-                {
-                    if (member.association.targetModelName == models[x].name) 
-                    {
-                        for (y = 0; y < connectionType.length - 1; y++) 
-                        {
-                            if (member.association.type == connectionType[y]) 
-                            {
-								connections[arrowCounter]=[counter,memberCounter,x,y,(1 + Math.round(Math.random() * multiple)),"the others"];
-								for(x=0;x<arrowCounter;x++)
-								{
-								    if(connections[x][2]==connections[arrowCounter][2])
-									   if(connections[x][4]+3>=connections[arrowCounter][4]&&connections[x][4]-3<=connections[arrowCounter][4])
-									       connections[arrowCounter][4]+=4;	   
-								}
-                                arrows[arrowCounter]=new ARROW(arrowCounter,"other");
-								arrowCounter++;
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
-             }
-             memberCounter++;
-         });
-		 counter++;
-    });	
 			
     function ARROW(a)
     {   
@@ -184,7 +153,7 @@ var drawModels=function() {
 		limit = 1200;
         modelBox[0]=models[connections[a][0]].r.getBBox();
 		modelBox[1]=models[connections[a][2]].r.getBBox();
-		sy = modelBox[0].y + connections[a][1] * 20;
+		sy = modelBox[0].y + connections[a][1] * 15 + 5;
         ey = modelBox[1].y + connections[a][4];
 	    if(connections[a][5]=="extend")
 		{
@@ -239,7 +208,7 @@ var drawModels=function() {
 			if( sx > ex ) ox = ex - 20;
 			else ox = sx - 20;
 		}
-		for(i=0;i<arrowCounter;i++)
+		for(i=0;i<connections.length;i++)
 		{
 		    if(ox==diox[i] && i!=a)
 			   ox+=5; 
@@ -257,44 +226,44 @@ var drawModels=function() {
 		}
 		if(connections[a][5]=="extend")
 		{
-		this.drawing1 = line(sy, sx, sy, ox).attr({
+		this.yol1 = line(sy, sx, sy, ox).attr({
             stroke: color[4]
         });
-        this.drawing2 = line(sy, ox, ey, ox).attr({
+        this.yol2 = line(sy, ox, ey, ox).attr({
             stroke: color[4]
         });
-        this.drawing3 = line(ey, ox, ey, kx).attr({
+        this.yol3 = line(ey, ox, ey, kx).attr({
             stroke: color[4]
         });
-        this.drawing4 = line(ey + 5, kx, ey,  ex).attr({
+        this.yol4 = line(ey + 5, kx, ey,  ex).attr({
             stroke: color[4]
         });
-        this.drawing5 = line(ey - 5, kx,  ey, ex).attr({
+        this.yol5 = line(ey - 5, kx,  ey, ex).attr({
             stroke: color[4]
         });
-        this.drawing6 = line(ey - 5, kx, ey + 5,  kx).attr({
+        this.yol6 = line(ey - 5, kx, ey + 5,  kx).attr({
             stroke: color[4]
         });
 		   
 		}
 		else
 		{
-        this.drawing1 = line(sx, sy, ox, sy).attr({
+        this.yol1 = line(sx, sy, ox, sy).attr({
             stroke: color[connections[a][3]]
         });
-        this.drawing2 = line(ox, sy, ox, ey).attr({
+        this.yol2 = line(ox, sy, ox, ey).attr({
             stroke: color[connections[a][3]]
         });
-        this.drawing3 = line(ox, ey, kx, ey).attr({
+        this.yol3 = line(ox, ey, kx, ey).attr({
             stroke: color[connections[a][3]]
         });
-        this.drawing4 = line(kx, ey + 5, ex, ey).attr({
+        this.yol4 = line(kx, ey + 5, ex, ey).attr({
             stroke: color[connections[a][3]]
         });
-        this.drawing5 = line(kx, ey - 5, ex, ey).attr({
+        this.yol5 = line(kx, ey - 5, ex, ey).attr({
             stroke: color[connections[a][3]]
         });
-        this.drawing6 = line(kx, ey - 5, kx, ey + 5).attr({
+        this.yol6 = line(kx, ey - 5, kx, ey + 5).attr({
             stroke: color[connections[a][3]]
         });
 		}
@@ -302,14 +271,14 @@ var drawModels=function() {
 	
 	function move_arrows(num)
 	{
-	    for(x=0;x<arrowCounter;x++)
+	    for(x=0;x<connections.length;x++)
 		{
-		    arrows[x].drawing1.remove();
-			arrows[x].drawing2.remove();
-			arrows[x].drawing3.remove();
-			arrows[x].drawing4.remove();
-			arrows[x].drawing5.remove();
-			arrows[x].drawing6.remove();
+		    arrows[x].yol1.remove();
+			arrows[x].yol2.remove();
+			arrows[x].yol3.remove();
+			arrows[x].yol4.remove();
+			arrows[x].yol5.remove();
+			arrows[x].yol6.remove();
 			arrows[x] = new ARROW(x);
 		}
 	}
@@ -317,4 +286,103 @@ var drawModels=function() {
     function line(BX, BY, SX, SY) {
         return paper.path("M" + BX + " " + BY + " L" + SX + " " + SY);
     }
+	
+	function parsing()
+	{
+	    var counter = 0;
+	    $.each(myModels, function(index, item) {
+	        var rad = Math.PI * counter / 3;
+	        models[counter] = new MODEL(30+300 + 300 * Math.cos(rad), 300 + 300 * Math.sin(rad));
+	        models[counter].header = 1;
+	        if (item.isMappedSuperClass == true) {
+	            models[counter].addMember("<<MappedSuperclass>>", 2, "10px",false,false);
+	            models[counter].header = 2;
+	        }
+			models[counter].name = item.name;
+	        $.each(item.members, function(index, member) {
+			    if(member.name == member.columnName)
+	                models[counter].addMember(member.name + ": " + member.type, 0, "12px",member.nullable,member.unique,member.id);
+				else  models[counter].addMember(member.name + ":" + member.type +"("+ member.columnName +")", 0, "12px",member.nullable,member.unique,member.id);
+	        });
+			if(models[counter].name == item.tableName)
+	           models[counter].addMember(item.name, 1, "14px",false,false,false);
+			else models[counter].addMember(item.name +":("+item.tableName + ")" , 1, "14px",false,false,false);
+	        counter++;
+	    }); 
+		
+		var arrowCounter=0;
+		counter=0;
+	    var memberCounter, arrowCounter, multiple;
+	    $.each(myModels, function(index, item) 
+	    {
+	        connections[arrowCounter] = new Array();
+			arrows[arrowCounter] = new Array();
+			var memberCounter=2,
+			multiple = 10;
+			if (item.isMappedSuperClass == true) {
+			    multiple =25;
+	            memberCounter = 3;
+		    }
+			for(x=0;x<models.length;x++){
+	            if (item.superClassName == models[x].name){
+			        connections[arrowCounter]= [counter,0,x,4, models[x].r.getBBox().width / (2 + Math.random() * 10),"extend"];
+					for(x=0;x<arrowCounter;x++)
+					{
+						if(connections[x][2]==connections[arrowCounter][2]&&connections[x][5]==connections[arrowCounter][5])
+							if(connections[x][4]+8>=connections[arrowCounter][4]&&connections[x][4]-8<=connections[arrowCounter][4])
+								connections[arrowCounter][4]+=12;	   
+					}
+					arrows[arrowCounter]=new ARROW(arrowCounter);
+					arrowCounter++;
+					break;
+					}
+			}		
+	         $.each(item.members, function(index, member) 
+	         {
+	             if (member.association != undefined) 
+	             {
+	                for (x = 0; x < models.length; x++) 
+	                {
+	                    if (member.association.targetModelName == models[x].name) 
+	                    {
+	                        for (y = 0; y < connectionType.length - 1; y++) 
+	                        {
+	                            if (member.association.type == connectionType[y]) 
+	                            {
+									connections[arrowCounter]=[counter,memberCounter,x,y,(1 + Math.round(Math.random() * multiple)),"the others"];
+									for(x=0;x<arrowCounter;x++)
+									{
+									    if(connections[x][2]==connections[arrowCounter][2]&&connections[x][5]==connections[arrowCounter][5])
+										   if(connections[x][4]+2>=connections[arrowCounter][4]&&connections[x][4]-2<=connections[arrowCounter][4])
+										       connections[arrowCounter][4]+=5;	   
+									}
+	                                arrows[arrowCounter]=new ARROW(arrowCounter,"other");
+									arrowCounter++;
+	                                break;
+	                            }
+	                        }
+	                        break;
+	                    }
+	                }
+	             }
+	             memberCounter++;
+	         });
+			 counter++;
+	    });	
+		}
+    parsing();
+
 };
+       
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
