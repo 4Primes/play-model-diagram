@@ -23,8 +23,8 @@ public class Member {
         super();
         this.name = name;
         this.columnName = name;
-        this.type = type.getSimpleName();
-        this.length= name.length();
+        this.type = type.getSimpleName(); 
+        this.length=255;
     }
 
 }

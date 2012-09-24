@@ -1,7 +1,8 @@
 
 function drawModels()
 {
-    var paper = Raphael(0, 0, 1200, 800),
+	var papX=1200,papY=800;
+    var paper = Raphael(0, 0, papX, papY),
         connectionType = ["ManyToMany", "OneToMany", "ManyToOne", "OneToOne", "Extend"],
         color = ["blue", "fuchsia", "black", "lime", "red"],
         models = new Array(),
@@ -32,18 +33,18 @@ function drawModels()
 
                 
                 if(isNullable){
-                	icnLen+=10;
-                	iconN=paper.image("/public/images/N.ico",x,y-5,10,10);
-                	x+=10;
+                	icnLen+=15;
+                	iconN=paper.image("/public/images/N.ico",x,y-7,15,15);
+                	x+=15;
                 	this.add(iconN);
             		iconN.attr({
                 		cursor: "move"
             		});
             	}
             	if (isUnique){
-            		icnLen+=10;
-            		iconU=paper.image("/public/images/U.ico",x,y-5,10,10);	
-            		x+=10;
+            		icnLen+=15;
+            		iconU=paper.image("/public/images/U.ico",x,y-7,15,15);	
+            		x+=15;
             		this.add(iconU);
             		iconN.attr({
                 		cursor: "move"
@@ -51,9 +52,9 @@ function drawModels()
 
             	}
             	if (isId){
-            		icnLen+=10;
-            		iconId=paper.image("/public/images/I.ico",x,y-5,10,10);	
-            		x+=10;
+            		icnLen+=15;
+            		iconId=paper.image("/public/images/I.ico",x,y-7,15,15);	
+            		x+=15;
             		this.add(iconId);
             		iconId.attr({
                 		cursor: "move"
@@ -71,7 +72,7 @@ function drawModels()
             else {
                 x = y = 0;
                 element = paper.text(x, y, text);
-				if(text.length*7 + 10 < this.width  )
+				if(text.length*7 + 20 < this.width  )
                     x = this.x + (this.width - text.length*9) / 2 ;
 			    else 
 			    	x = this.x + 5;
@@ -300,9 +301,12 @@ function drawModels()
 	        }
 			models[counter].name = item.name;
 	        $.each(item.members, function(index, member) {
+	        	var ifItsString="";
+	        	if(member.type=="String")
+	        		ifItsString="["+member.length+"]";
 			    if(member.name == member.columnName)
-	                models[counter].addMember(member.name + ": " + member.type, 0, "12px",member.nullable,member.unique,member.id);
-				else  models[counter].addMember(member.name + ":" + member.type +"("+ member.columnName +")", 0, "12px",member.nullable,member.unique,member.id);
+	                models[counter].addMember(member.name+ifItsString+": " + member.type, 0, "12px",member.nullable,member.unique,member.id);
+				else  models[counter].addMember(member.name +"("+ member.columnName +")"+ifItsString+":" + member.type, 0, "12px",member.nullable,member.unique,member.id);
 	        });
 			if(models[counter].name == item.tableName)
 	           models[counter].addMember(item.name, 1, "14px",false,false,false);

@@ -75,14 +75,15 @@ public class ModelDiagramPlugin extends PlayPlugin {
                     } else if (annotation.annotationType().equals(JoinColumn.class)) {
                         JoinColumn column = (JoinColumn) annotation;
                         member.nullable = column.nullable();
-                        member.unique = column.unique();
+                        member.unique = column.unique();               
                         if (!"".equals(column.name()))
                             member.columnName = column.name();
                     } else if (annotation.annotationType().equals(OneToMany.class)) {
                         OneToMany oneToMany = (OneToMany) annotation;
                         Association association = new Association();
                         association.type = "OneToMany";
-                        Type genericType = field.getGenericType();
+                        System.out.println(field.getType().getSimpleName());
+                                   Type genericType = field.getGenericType();
                         if (genericType instanceof ParameterizedType) {
                             ParameterizedType aType = (ParameterizedType) genericType;
                             Type fieldArgType = aType.getActualTypeArguments()[0];
@@ -98,7 +99,8 @@ public class ModelDiagramPlugin extends PlayPlugin {
                     } else if (annotation.annotationType().equals(ManyToMany.class)) {
                         ManyToMany manyToMany = (ManyToMany) annotation;
                         Association association = new Association();
-                        association.type = "ManyToMany";
+                        System.out.println(field.getType().getSimpleName());
+                                   association.type = "ManyToMany";
                         Type genericType = field.getGenericType();
                         if (genericType instanceof ParameterizedType) {
                             ParameterizedType aType = (ParameterizedType) genericType;
