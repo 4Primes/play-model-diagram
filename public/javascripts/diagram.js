@@ -227,45 +227,32 @@ function drawModels()
 		}
 		if(connections[a][5]=="extend")
 		{
-		this.yol1 = line(sy, sx, sy, ox).attr({
+		this.drawing1 = line(sy, sx, sy, ox).attr({
             stroke: color[4]
         });
-        this.yol2 = line(sy, ox, ey, ox).attr({
+        this.drawing2 = line(sy, ox, ey, ox).attr({
             stroke: color[4]
         });
-        this.yol3 = line(ey, ox, ey, kx).attr({
+        this.drawing3 = line(ey, ox, ey, kx).attr({
             stroke: color[4]
         });
-        this.yol4 = line(ey + 5, kx, ey,  ex).attr({
-            stroke: color[4]
+         this.drawing4 = triangle(ey+5,kx,ey,ex,ey-5,kx).attr({
+            fill : color[4]
         });
-        this.yol5 = line(ey - 5, kx,  ey, ex).attr({
-            stroke: color[4]
-        });
-        this.yol6 = line(ey - 5, kx, ey + 5,  kx).attr({
-            stroke: color[4]
-        });
-		   
 		}
 		else
 		{
-        this.yol1 = line(sx, sy, ox, sy).attr({
+        this.drawing1 = line(sx, sy, ox, sy).attr({
             stroke: color[connections[a][3]]
         });
-        this.yol2 = line(ox, sy, ox, ey).attr({
+        this.drawing2 = line(ox, sy, ox, ey).attr({
             stroke: color[connections[a][3]]
         });
-        this.yol3 = line(ox, ey, kx, ey).attr({
+        this.drawing3 = line(ox, ey, kx, ey).attr({
             stroke: color[connections[a][3]]
         });
-        this.yol4 = line(kx, ey + 5, ex, ey).attr({
-            stroke: color[connections[a][3]]
-        });
-        this.yol5 = line(kx, ey - 5, ex, ey).attr({
-            stroke: color[connections[a][3]]
-        });
-        this.yol6 = line(kx, ey - 5, kx, ey + 5).attr({
-            stroke: color[connections[a][3]]
+        this.drawing4 = triangle(kx,ey+5,ex,ey,kx,ey-5).attr({
+            fill : color[connections[a][3]]
         });
 		}
     }
@@ -274,12 +261,10 @@ function drawModels()
 	{
 	    for(x=0;x<connections.length;x++)
 		{
-		    arrows[x].yol1.remove();
-			arrows[x].yol2.remove();
-			arrows[x].yol3.remove();
-			arrows[x].yol4.remove();
-			arrows[x].yol5.remove();
-			arrows[x].yol6.remove();
+		    arrows[x].drawing1.remove();
+			arrows[x].drawing2.remove();
+			arrows[x].drawing3.remove();
+			arrows[x].drawing4.remove();
 			arrows[x] = new ARROW(x);
 		}
 	}
@@ -287,7 +272,9 @@ function drawModels()
     function line(BX, BY, SX, SY) {
         return paper.path("M" + BX + " " + BY + " L" + SX + " " + SY);
     }
-	
+     function triangle(X1,Y1,X2,Y2,X3,Y3){
+        return paper.path("M"+X1+","+Y1+"L"+X2+","+Y2+"L"+X3+","+Y3+"z")
+    }
 	function parsing()
 	{
 	    var counter = 0;
