@@ -288,12 +288,15 @@ function drawModels()
 	        }
 			models[counter].name = item.name;
 	        $.each(item.members, function(index, member) {
-	        	var ifItsString="";
+	        	var ifItsString="",listType="";
 	        	if(member.type=="String")
 	        		ifItsString="["+member.length+"]";
+	        	else if(member.type=="List")
+	        		listType="{"+member.association.targetModelName+"}";
+
 			    if(member.name == member.columnName)
-	                models[counter].addMember(member.name+ifItsString+": " + member.type, 0, "12px",member.nullable,member.unique,member.id);
-				else  models[counter].addMember(member.name +"("+ member.columnName +")"+ifItsString+":" + member.type, 0, "12px",member.nullable,member.unique,member.id);
+	                models[counter].addMember(member.name+ifItsString+": " + member.type+listType, 0, "12px",member.nullable,member.unique,member.id);
+				else  models[counter].addMember(member.name +"("+ member.columnName +")"+ifItsString+":" + member.type+listType, 0, "12px",member.nullable,member.unique,member.id);
 	        });
 			if(models[counter].name == item.tableName)
 	           models[counter].addMember(item.name, 1, "14px",false,false,false);
