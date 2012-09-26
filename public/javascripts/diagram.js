@@ -7,7 +7,8 @@ function drawModels() {
         models = new Array(),
         connections = new Array(),
         arrows = new Array(),
-        diox = new Array();
+        diox = new Array(),
+        borderLine= paper.rect(0,0,paper.width,paper.height);
 
     function MODEL(x, y, packName, z) {
         this.elements = new Array();
@@ -272,6 +273,8 @@ function drawModels() {
 		    var newWidth=paper.width, newHeight = paper.height* (1.1);
 		    paper.setSize(newWidth,newHeight)
 		}
+		borderLine.remove();
+		borderLine= paper.rect(0,0,paper.width,paper.height);
 	}
 
     function line(BX, BY, SX, SY, id) {
