@@ -9,11 +9,12 @@ function drawModels() {
         arrows = new Array(),
         diox = new Array();
 
-    function MODEL(x, y, packName) {
+    function MODEL(x, y, packName, z) {
         this.elements = new Array();
         var elmCount = 0;
         this.add = function(element, newText) {
-            element.drag(move, start, up);
+        	element.num=z;
+            element.drag(move, start, up)     
             this.elements.push(element);
             element.group = this.elements;
             if (newText) elmCount++;
@@ -26,22 +27,22 @@ function drawModels() {
             if (mid == 0) {
                 y = this.y + (elmCount + 2) * 15;
                 x = this.x;
-                if (!(isNullable)) iconN = paper.image("/public/images/notN.png", x, y - 5, 12, 12);
-                else iconN = paper.image("/public/images/N.png", x, y - 5, 12, 12);
+                if (!(isNullable)) iconN = paper.image("/public/images/not_nullable.png", x, y - 5, 12, 12);
+                else iconN = paper.image("/public/images/nullable.png", x, y - 5, 12, 12);
                 this.add(iconN, false);
                 iconN.attr({
                     cursor: "move"
                 });
                 x += 12;
-                if (isUnique) iconU = paper.image("/public/images/U.png", x, y - 5, 12, 12);
-                else iconU = paper.image("/public/images/notU.png", x, y - 5, 12, 12);
+                if (isUnique) iconU = paper.image("/public/images/unique.png", x, y - 5, 12, 12);
+                else iconU = paper.image("/public/images/not_unique.png", x, y - 5, 12, 12);
                 this.add(iconU, false);
                 iconU.attr({
                     cursor: "move"
                 });
                 x += 12;
-                if (isId) iconId = paper.image("/public/images/Id.png", x, y - 5, 12, 12);
-                else iconId = paper.image("/public/images/notId.png", x, y - 5, 12, 12);
+                if (isId) iconId = paper.image("/public/images/id.png", x, y - 5, 12, 12);
+                else iconId = paper.image("/public/images/not_id.png", x, y - 5, 12, 12);
                 this.add(iconId, false);
                 iconId.attr({
                     cursor: "move"
@@ -140,15 +141,19 @@ function drawModels() {
     };
 
     function move(dx, dy) {
+    	var number=this.group[0].num;
         for (var index in this.group) {
+        	
             var item = this.group[index];
             var attr = {
                 x: item.ox + dx,
                 y: item.oy + dy
             };
             item.attr(attr);
+            
         }
         move_arrows();
+        border_control(number);
     };
 
     function up() {
@@ -231,16 +236,16 @@ function drawModels() {
             if (ox < kx) ox = kx;
         }
         if (connections[a][5] == "extend") {
-            this.drawing1 = line(sy, sx, sy, ox, color[4])
-            this.drawing2 = line(sy, ox, ey, ox, color[4])
-            this.drawing3 = line(ey, ox, ey, kx, color[4])
-            this.drawing4 = triangle(ey + 5, kx, ey, ex, ey - 5, kx, color[4], "white")
+            this.drawing1 = line(sy, sx, sy, ox,4)
+            this.drawing2 = line(sy, ox, ey, ox,4)
+            this.drawing3 = line(ey, ox, ey, kx,4)
+            this.drawing4 = triangle(ey + 5, kx, ey, ex, ey - 5, kx,4, "white")
         }
         else {
-            this.drawing1 = line(sx, sy, ox, sy, color[connections[a][3]])
-            this.drawing2 = line(ox, sy, ox, ey, color[connections[a][3]])
-            this.drawing3 = line(ox, ey, kx, ey, color[connections[a][3]])
-            this.drawing4 = triangle(kx, ey + 5, ex, ey, kx, ey - 5, color[connections[a][3]], color[connections[a][3]])
+            this.drawing1 = line(sx, sy, ox, sy, connections[a][3])
+            this.drawing2 = line(ox, sy, ox, ey, connections[a][3])
+            this.drawing3 = line(ox, ey, kx, ey, connections[a][3])
+            this.drawing4 = triangle(kx, ey + 5, ex, ey, kx, ey - 5, connections[a][3], color[connections[a][3]])
         }
     }
 
@@ -254,25 +259,43 @@ function drawModels() {
         }
     }
 
-    function line(BX, BY, SX, SY, color) {
+    function border_control(number)
+	{
+	    var modelBox=models[number].r.getBBox();
+		if (modelBox.x + modelBox.width > paper.width )
+        {
+		    var newWidth=paper.width * (1.1),newHeight = paper.height;	
+		    paper.setSize(newWidth,newHeight)
+		}
+	    if (modelBox.y + modelBox.height > paper.height )
+		{
+		    var newWidth=paper.width, newHeight = paper.height* (1.1);
+		    paper.setSize(newWidth,newHeight)
+		}
+	}
+
+    function line(BX, BY, SX, SY, id) {
         return paper.path("M" + BX + " " + BY + " L" + SX + " " + SY).attr({
-            stroke: color
+            stroke: color[id],
+            title: connectionType[id]
         });
     }
 
-    function triangle(X1, Y1, X2, Y2, X3, Y3, color, color2) {
+    function triangle(X1, Y1, X2, Y2, X3, Y3, id, color2) {
         return paper.path("M" + X1 + "," + Y1 + "L" + X2 + "," + Y2 + "L" + X3 + "," + Y3 + "z").attr({
-            stroke: color,
-            fill: color2
+            stroke: color[id],
+            fill: color2,
+            title: connectionType[id]
         });
     }
 
-    paper.rect(5, 5, 85, 70).attr({
+    paper.rect(paper.width-90,paper.height-75, 85, 70, 5).attr({
         fill: "white",
         stroke: "navy"
     });
     for (x = 0; x < 5; x++) {
-        var information = paper.text(45, 12 + 14 * x, connectionType[x]).attr({
+        var information = paper.text(paper.width-80,paper.height-(69 - 14 * x), connectionType[x]).attr({
+        	'text-anchor': 'start',
             stroke: color[x]
         });
         information.attr("font-size", "12px");
@@ -286,7 +309,7 @@ function drawModels() {
         });
         $.each(myModels, function(index, item) {
             var rad = 2 * Math.PI * counter / modelCounter;
-            models[counter] = new MODEL(30 + 300 + 300 * Math.cos(rad), 300 + 300 * Math.sin(rad),item.packageName);
+            models[counter] = new MODEL(30 + 300 + 300 * Math.cos(rad), 300 + 300 * Math.sin(rad),item.packageName,counter);
             models[counter].header = 1;
             if (item.isMappedSuperClass == true) {
                 models[counter].addMember("<<MappedSuperclass>>", 2, "10px", false, false, false);
