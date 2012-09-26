@@ -11,6 +11,8 @@ public class Model {
     String tableName;
 
     String superClassName;
+    
+    String packageName;
 
     boolean isMappedSuperClass = false;
 
@@ -22,10 +24,19 @@ public class Model {
     }
 
     public Model(String name, String tableName) {
-
-        this.name = name;
+    	String []nametmp=name.split("[.]");
+    	String Pname=nametmp[0];
+    	if(nametmp.length>2)
+    	{
+    		for (int i = 1; i < nametmp.length-1; i++) {
+				Pname+="."+nametmp[i];
+			}
+    	}
+        this.name = nametmp[nametmp.length-1];
+        this.packageName=Pname;
         this.tableName = tableName;
         this.members = new TreeMap<String, Member>();
+        
     }
 
     public void addMember(String name, Member member) {

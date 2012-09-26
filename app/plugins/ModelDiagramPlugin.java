@@ -42,17 +42,18 @@ public class ModelDiagramPlugin extends PlayPlugin {
         List<Class> entities = Play.classloader.getAnnotatedClasses(Entity.class);
         entities.addAll(Play.classloader.getAnnotatedClasses(MappedSuperclass.class));
         entities.add(play.db.jpa.Model.class);
+       
         for (Class clazz : entities) {
             String tableName = clazz.getSimpleName();
-
+            
             Annotation classAnnotation = clazz.getAnnotation(Table.class);
             if (classAnnotation != null) {
                 if (!"".equals(((Table) classAnnotation).name()))
                     tableName = ((Table) classAnnotation).name();
             }
-
-            Model model = new Model(clazz.getSimpleName(), tableName);
-
+            Model model = new Model(clazz.getCanonicalName(), tableName);
+            
+            
             if (clazz.getSuperclass().isAnnotationPresent(MappedSuperclass.class)) {
                 model.superClassName = clazz.getSuperclass().getSimpleName();
             }
@@ -82,7 +83,6 @@ public class ModelDiagramPlugin extends PlayPlugin {
                         OneToMany oneToMany = (OneToMany) annotation;
                         Association association = new Association();
                         association.type = "OneToMany";
-                        System.out.println(field.getType().getSimpleName());
                                    Type genericType = field.getGenericType();
                         if (genericType instanceof ParameterizedType) {
                             ParameterizedType aType = (ParameterizedType) genericType;
@@ -99,7 +99,6 @@ public class ModelDiagramPlugin extends PlayPlugin {
                     } else if (annotation.annotationType().equals(ManyToMany.class)) {
                         ManyToMany manyToMany = (ManyToMany) annotation;
                         Association association = new Association();
-                        System.out.println(field.getType().getSimpleName());
                                    association.type = "ManyToMany";
                         Type genericType = field.getGenericType();
                         if (genericType instanceof ParameterizedType) {
