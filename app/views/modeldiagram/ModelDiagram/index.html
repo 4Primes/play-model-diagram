@@ -7,9 +7,27 @@
 <!-- ${json} -->
 <!-- </pre> -->
 
+<body>
+<div id="settings" style="display: none">
+    <div id="Canvas" class="Canvas">
+    	<button id=refresh>Refresh</button>
+    </div>
+</div>
+	
+	<button id="button-settings" >Settings</button>
+
+
+<div id="raphael" ></div>
+
+
+
+
+
+</body>
+
 <script>
  	var myModels = ${json.raw()};
-	drawModels(myModels);
+	drawModels(myModels,true);
 //	alert(myModels.User.members.events.association.type);
 // 	$.each(myModels, function(index, item) {
 // 		alert(item.name + " " + item.tableName);
@@ -19,4 +37,27 @@
 // 		});
 // 		alert(item.custom);
 // 	});
+var $settings = $('#settings');
+    $( "#button-settings" )
+        .button({
+            icons: {
+                primary: ".ui-icon-triangle-1-s"
+            },
+            text: false
+        })
+        .on('click', function(e) {
+            $settings.slideToggle('normal');
+            e.preventDefault();
+        });
+
+        $( "#refresh" )
+        .button({
+            icons: {
+                primary: ".ui-icon-arrowrefresh-1-e"
+            },
+            text: false
+        })
+        .on('click', function(e) {
+           drawModels(myModels,false);
+        });
 </script>

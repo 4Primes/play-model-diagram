@@ -1,33 +1,80 @@
-function drawModels() {
+
+var packages=new Array(),
+	modelCounter = 0;
+
+
+
+function checkBoxMaker(time) {
+	
+	if(!time)
+		return;
+   $.each(myModels, function(index, item) {
+            var flag=true;
+            for (var i = 0; i < packages.length; i++) 
+            {
+            		if(packages[i]==item.packageName)
+            			flag=false;
+            };
+            if(flag)
+            {
+            		packages[packages.length]=item.packageName;
+            }
+
+
+            if(item.packageName)
+            modelCounter++;
+        });
+
+        for (var i = 0; i <packages.length; i++) {
+            		addCheckbox(packages[i].split('.').join('_') );
+        };
+
+};
+
+
+
+
+function drawModels(myModels,time) {
+	checkBoxMaker(time);
     var papX = 1200,
         papY = 800;
-    var paper = Raphael(0, 0, papX, papY),
-        connectionType = ["ManyToMany", "OneToMany", "ManyToOne", "OneToOne", "Extend"],
+    var paper = Raphael(0,100, papX, papY),
+        connectionType = ["ManyToMany", "OneToMany", "ManyToOne", "OneToOne", "Extends"],
         color = ["blue", "fuchsia", "black", "lime", "red"],
         models = new Array(),
         connections = new Array(),
         arrows = new Array(),
         diox = new Array(),
-        borderLine= paper.rect(0,0,paper.width,paper.height);
-
+        borderLine= paper.rect(0,0,paper.width,paper.height),
+		counter = 0;
+	paper.rect(0,0,paper.width,paper.height).attr({"fill":"white"});
     function MODEL(x, y, packName, z) {
         this.elements = new Array();
+        var boxColors=[ "#DBDBD9","#F5F5F5"];
         var elmCount = 0;
+        this.q=new Array();
+        qCounter=0;
         this.add = function(element, newText) {
-        	element.num=z;
+            element.num=z;
             element.drag(move, start, up)     
             this.elements.push(element);
             element.group = this.elements;
-            if (newText) elmCount++;
+            if (newText) 
+            		elmCount++;
             this.p.attr("height", (15 * this.header + 8));
-            this.r.attr("height", ((elmCount) * 15) + 10);
-            
+            this.r.attr("height", ((elmCount) * 15) + 10);          
         };
         this.addMember = function(text, mid, font_size, isNullable, isUnique, isId) {
             var x, y, element, iconU, iconN, iconId, icnLen = 0;
             if (mid == 0) {
                 y = this.y + (elmCount + 2) * 15;
                 x = this.x;
+                this.q[qCounter]=paper.rect(this.x+1, y-6,this.width-2, 15).attr({
+                	"fill":boxColors[qCounter%2],
+                	stroke: boxColors[qCounter%2]
+                       });
+        	   this.add(this.q[qCounter],false);
+        	   qCounter++;
                 if (!(isNullable)) iconN = paper.image("/public/images/not_nullable.png", x, y - 5, 12, 12);
                 else iconN = paper.image("/public/images/nullable.png", x, y - 5, 12, 12);
                 this.add(iconN, false);
@@ -52,21 +99,24 @@ function drawModels() {
                 newTexts = [true, false]
                 textColors = ["bold", "lighter"]
                 textNodes = text.split(' ');
+                var  len=new Array();
                 for (i = 0; i < textNodes.length; ++i) {
-                    textNodes[i] = paper.text(x, y, textNodes[i]).attr({
+                	len[i]=textNodes[i].length;
+                    textNodes[i] = paper.text(x+2, y+2, textNodes[i]).attr({
                         'text-anchor': 'start',
-                        'font-size': font_size,
-                        'font-family': "courier new",
+                        'font-family': "sourceCodePro",
                         'font-weight': textColors[i],
                         cursor: "move"
                     });
                     this.add(textNodes[i], newTexts[i])
-                    x += (textNodes[i].getBBox().width);
+                    x += (len[i]*6.3);
                 }
-                if (textNodes[0].getBBox().width + textNodes[1].getBBox().width + 36 > (this.width - this.widthOffset)) {
-                    this.width = textNodes[0].getBBox().width + textNodes[1].getBBox().width + 36 + this.widthOffset;
+                if ((len[0]+len[1])*6.3 +36 > (this.width - this.widthOffset)) {
+                    this.width =(len[0]+len[1])*6.3 + 36 + this.widthOffset;
                     this.r.attr("width", this.width);
                     this.p.attr("width", this.width);
+                    for(i=0;i<qCounter;i++)
+                    	this.q[i].attr("width", this.width-2);
                 }
             }
             else if (mid == 2) {
@@ -75,12 +125,12 @@ function drawModels() {
                 element = paper.text(x, y, text).attr({
                     'text-anchor': 'start',
                     'font-size': font_size,
-                    'font-family': "courier new",
+                    'font-family': "sourceCodePro",
                     cursor: "move"
                 });
                 this.add(element, true);
                 this.p.attr({
-                    fill: "#89F5A6"
+                    fill: "#113F8C"
                 });
                 if (element.getBBox().width + icnLen > (this.width - this.widthOffset)) {
                     this.width = element.getBBox().width + icnLen + this.widthOffset;
@@ -91,15 +141,18 @@ function drawModels() {
             else {
                 x = y = 0;
                 element = paper.text(x, y, text);
-                if (text.length * 7 + 20 < this.width) x = this.x + (this.width - text.length * 9) / 2;
-                else x = this.x + 5;
+                if (text.length * 7 + 20 < this.width) 
+                	x = this.x + (this.width - text.length * 9) / 2;
+                else 
+                	x = this.x + 5;
                 element.remove();
                 y = this.y + this.header * 13;
                 element = paper.text(x, y, text).attr({
-                    "font-weight": "600",
+                    "font-weight": "bold",
                     'text-anchor': 'start',
                     'font-size': font_size,
-                    'font-family': "courier new",
+                    'font-family': "sourceCodePro",
+                    'title':packName,
                     cursor: "move"
                 });
                 this.add(element, true);
@@ -107,6 +160,8 @@ function drawModels() {
                     this.width = element.getBBox().width + icnLen + this.widthOffset;
                     this.r.attr("width", this.width);
                     this.p.attr("width", this.width);
+                    for(i=0;i<qCounter;i++)
+                    	this.q[i].attr("width", this.width-2);
                 }
             }
         }
@@ -114,18 +169,16 @@ function drawModels() {
         this.y = y;
         this.width = 10;
         this.widthOffset = 10;
-        this.r = paper.rect(x, y, this.width, 10, 5).attr({
-            fill: "white",
-            opacity: 1,
+        this.r = paper.rect(x, y, this.width, 10).attr({
             cursor: "move"
         });
-        this.p = paper.rect(x, y, this.width, 10, 5).attr({
-            fill: "aqua",
+        this.p = paper.rect(x, y, this.width, 10).attr({
+            fill: "#00A1CB",
             opacity: 1,
             cursor: "move"
         });
         this.p.attr({ "title": packName} );
-        this.add(this.r);
+       this.add(this.r);
         this.add(this.p);
     };
 
@@ -259,7 +312,6 @@ function drawModels() {
             arrows[x] = new ARROW(x);
         }
     }
-
     function border_control(number)
 	{
 	    var modelBox=models[number].r.getBBox();
@@ -292,44 +344,56 @@ function drawModels() {
         });
     }
 
-    paper.rect(paper.width-90,paper.height-75, 85, 70, 5).attr({
+    paper.rect(0,0, 85, 70, 5).attr({
         fill: "white",
         stroke: "navy"
     });
     for (x = 0; x < 5; x++) {
-        var information = paper.text(paper.width-80,paper.height-(69 - 14 * x), connectionType[x]).attr({
+        var information = paper.text(5,5+14 * x, connectionType[x]).attr({
         	'text-anchor': 'start',
             stroke: color[x]
         });
-        information.attr("font-size", "12px");
+        information.attr("font-size", "11px" );
+          information.attr("font-family", "sourceCodePro" );
+    }
+    function will_displayed()
+    {
+
+
+
     }
 
+    
+  
     function parsing() {
-        var counter = 0,
-            modelCounter = 0;
+        
+
+        
+
         $.each(myModels, function(index, item) {
-            modelCounter++;
-        });
-        $.each(myModels, function(index, item) {
-            var rad = 2 * Math.PI * counter / modelCounter;
-            models[counter] = new MODEL(30 + 300 + 300 * Math.cos(rad), 300 + 300 * Math.sin(rad),item.packageName,counter);
-            models[counter].header = 1;
-            if (item.isMappedSuperClass == true) {
+        	//alert(  $('div input[name=' + item.packageName.split('.').join('_') + ']').is(":checked")  );
+        	//if($(" input:checkbox name:"+item.packageName).is(':checked'))
+        	{
+            		var rad = 2 * Math.PI * counter / modelCounter;
+            		models[counter] = new MODEL(30 + 300 + 300 * Math.cos(rad), 300 + 300 * Math.sin(rad),item.packageName,counter);
+            		models[counter].header = 1;
+          		  if (item.isMappedSuperClass == true) {
                 models[counter].addMember("<<MappedSuperclass>>", 2, "10px", false, false, false);
                 models[counter].header = 2;
-            }
-            models[counter].name = item.name;
-            $.each(item.members, function(index, member) {
+          		  }
+           		 models[counter].name = item.name;
+          		  $.each(item.members, function(index, member) {
                 var ifItsString = "",
                     listType = "";
                 if (member.type == "String") ifItsString = "[" + member.length + "]";
                 else if (member.type == "List") listType = "<" + member.association.targetModelName + ">";
                 if (member.name == member.columnName) models[counter].addMember(member.name + ": " + member.type + listType + ifItsString, 0, "12px", member.nullable, member.unique, member.id);
                 else models[counter].addMember(member.name + "(" + member.columnName + ")" + ": " + member.type + listType + ifItsString, 0, "12px", member.nullable, member.unique, member.id);
-            });
-            if (models[counter].name == item.tableName) models[counter].addMember(item.name, 1, "14px", false, false, false);
-            else models[counter].addMember(item.name + "(" + item.tableName + ")", 1, "14px", false, false, false);
-            counter++;
+           		 });
+          		  if (models[counter].name == item.tableName) models[counter].addMember(item.name, 1, "14px", false, false, false);
+          		  else models[counter].addMember(item.name + "(" + item.tableName + ")", 1, "14px", false, false, false);
+           		 counter++;
+        	}
         });
 
         var arrowCounter = 0;
@@ -380,5 +444,12 @@ function drawModels() {
         });
     }
     parsing();
-
 };
+function addCheckbox(name) 
+    {
+   	var container = $('#Canvas');
+   	var inputs = container.find('input');
+   	var id = inputs.length+1;
+	var html = '<input type="checkbox"  checked id='+name+'" value="'+name+'" /> <label for="cb'+id+'">'+name+'</label>';
+   	container.append($(html));
+   }

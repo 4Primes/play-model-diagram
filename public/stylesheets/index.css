@@ -1,0 +1,16 @@
+
+@font-face{
+       font-family: sourceCodeProBold;
+       src:url('/public/fonts/SourceCodePro-Bold.ttf');
+       src: local(sourceCodePro), url('/public/fonts/SourceCodePro-Bold.ttf')    
+             format('opentype');
+}
+@font-face{
+       font-family: sourceCodePro;
+       src:url('/public/fonts/SourceCodePro-Regular.ttf');
+       src: local(sourceCodePro), url('/public/fonts/SourceCodePro-Regular.ttf')    
+             format('opentype');
+}
+body{
+      font-family: 'sourceCodePro', sans-serif;
+}

@@ -31,7 +31,7 @@ public class ModelDiagramPlugin extends PlayPlugin {
 
     @Override
     public void onRoutesLoaded() {
-
+    	
         Router.addRoute("GET", "/@models/?", "modeldiagram.ModelDiagram.index");
         super.onRoutesLoaded();
     }
