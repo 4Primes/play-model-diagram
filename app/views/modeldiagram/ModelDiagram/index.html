@@ -10,17 +10,12 @@
 <body>
 <div id="settings" style="display: none">
     <div id="Canvas" class="Canvas">
-    	<button id=refresh>Refresh</button>
     </div>
 </div>
-	
-	<button id="button-settings" >Settings</button>
+	<button id="buttonSettings" style="">Settings</button>
 
 
-<div id="raphael" ></div>
-
-
-
+<div id="holder"></div>
 
 
 </body>
@@ -38,26 +33,24 @@
 // 		alert(item.custom);
 // 	});
 var $settings = $('#settings');
-    $( "#button-settings" )
-        .button({
-            icons: {
-                primary: ".ui-icon-triangle-1-s"
-            },
-            text: false
-        })
-        .on('click', function(e) {
+    $( '#buttonSettings' )
+    	.on('click', function(e) {
             $settings.slideToggle('normal');
             e.preventDefault();
-        });
+        })
+        .button({
+                text: false,
+                icons: {
+                    primary: "ui-icon-triangle-1-s"
+                }
+            })
+        ;
 
         $( "#refresh" )
         .button({
             icons: {
-                primary: ".ui-icon-arrowrefresh-1-e"
+                primary: "ui-icon-arrowrefresh-1-e"
             },
             text: false
         })
-        .on('click', function(e) {
-           drawModels(myModels,false);
-        });
 </script>

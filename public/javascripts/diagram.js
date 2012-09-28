@@ -1,6 +1,9 @@
 
 var packages=new Array(),
-	modelCounter = 0;
+	modelCounter = 0,
+	paper;
+var papX = 1600,
+    papY = 1200;
 
 
 
@@ -39,24 +42,26 @@ function drawModels(myModels,time) {
 
 	
 	var isChecked=new Array();
-    var papX = 1200,
-        papY = 800;
-    var paper = Raphael(0,100, papX, papY),
-        connectionType = ["ManyToMany", "OneToMany", "ManyToOne", "OneToOne", "Extends"],
+    var connectionType = ["ManyToMany", "OneToMany", "ManyToOne", "OneToOne", "Extends"],
         color = ["blue", "fuchsia", "black", "lime", "red"],
         models = new Array(),
         connections = new Array(),
         arrows = new Array(),
         diox = new Array(),
-        borderLine= paper.rect(0,0,paper.width,paper.height),
 		counter = 0;
-	paper.rect(0,0,paper.width,paper.height).attr({"fill":"white"});
+	paper = r=Raphael("holder", 1000.3622,800.09448); 
+	borderLine= paper.rect(0,0,paper.width,paper.height),
 	$("div :checkbox").each(
     function() 
     {
     	isChecked[isChecked.length]=$(this).is(':checked');
     }
-	);	
+	).on("change",function() 
+    {
+    	isChecked[isChecked.length]=$(this).is(':checked');
+    	paper.remove();
+        drawModels(myModels,false);
+    });	
 
 
     function MODEL(x, y, packName, z) {
@@ -137,6 +142,7 @@ function drawModels(myModels,time) {
                     'text-anchor': 'start',
                     'font-size': font_size,
                     'font-family': "sourceCodePro",
+                    'fill':'white',
                     cursor: "move"
                 });
                 this.add(element, true);
@@ -163,6 +169,7 @@ function drawModels(myModels,time) {
                     'text-anchor': 'start',
                     'font-size': font_size,
                     'font-family': "sourceCodePro",
+                    'fill' : "white",
                     'title':packName,
                     cursor: "move"
                 });
@@ -210,10 +217,12 @@ function drawModels(myModels,time) {
         for (var index in this.group) {
         	
             var item = this.group[index];
-            var attr = {
-                x: item.ox + dx,
-                y: item.oy + dy
-            };
+            var xt=item.ox+dx,yt=item.oy+dy;	
+
+        	var attr = {
+                x: xt,
+                y: yt
+               	};
             item.attr(attr);
             
         }
@@ -315,6 +324,8 @@ function drawModels(myModels,time) {
     }
 
     function move_arrows(num) {
+    	if(connections.length<=1)
+    		return;
         for (x = 0; x < connections.length; x++) {
             arrows[x].drawing1.remove();
             arrows[x].drawing2.remove();
@@ -326,15 +337,18 @@ function drawModels(myModels,time) {
     function border_control(number)
 	{
 	    var modelBox=models[number].r.getBBox();
+
 		if (modelBox.x + modelBox.width > paper.width )
         {
-		    var newWidth=paper.width * (1.1),newHeight = paper.height;	
-		    paper.setSize(newWidth,newHeight)
+		    papX=modelBox.x + modelBox.width;
+		    papY = paper.height;	
+		    paper.setSize(papX,papY);
 		}
 	    if (modelBox.y + modelBox.height > paper.height )
 		{
-		    var newWidth=paper.width, newHeight = paper.height* (1.1);
-		    paper.setSize(newWidth,newHeight)
+		    papX=paper.width;
+		    papY = modelBox.y + modelBox.height;
+		    paper.setSize(papX,papY);
 		}
 		borderLine.remove();
 		borderLine= paper.rect(0,0,paper.width,paper.height);
@@ -355,34 +369,26 @@ function drawModels(myModels,time) {
         });
     }
 
-    paper.rect(0,0, 85, 70, 5).attr({
+    paper.rect(0,0, 90, 70, 5).attr({
         fill: "white",
         stroke: "navy"
     });
     for (x = 0; x < 5; x++) {
         var information = paper.text(5,5+14 * x, connectionType[x]).attr({
-        	'text-anchor': 'start',
-            stroke: color[x]
+        	'text-anchor': 'start'
         });
         information.attr("font-size", "11px" );
-          information.attr("font-family", "sourceCodePro" );
+        information.attr("font-family", "sourceCodePro" );
+        information.attr("font-weight", "bold");
+        var infoColor=paper.rect(72,2+14*x,15,10);
+        infoColor.attr('fill',color[x]);
     }
-    function will_displayed()
-    {
-
-
-
-    }
-
     
-  
     function parsing() {
 
         $.each(myModels, function(index, item) {
-        	//alert(isChecked[packages.indexOf(item.packageName.split(".").join('_'))]);
         	if( isChecked[packages.indexOf(item.packageName)])
         	{
-        		alert(item.packageName);
             		var rad = 2 * Math.PI * counter / modelCounter;
             		models[counter] = new MODEL(30 + 300 + 300 * Math.cos(rad), 300 + 300 * Math.sin(rad),item.packageName,counter);
             		models[counter].header = 1;
@@ -409,6 +415,8 @@ function drawModels(myModels,time) {
         counter = 0;
         var memberCounter, arrowCounter, multiple;
         $.each(myModels, function(index, item) {
+        	if( isChecked[packages.indexOf(item.packageName)])
+        	{
             connections[arrowCounter] = new Array();
             arrows[arrowCounter] = new Array();
             var memberCounter = 2,
@@ -450,7 +458,8 @@ function drawModels(myModels,time) {
                 memberCounter++;
             });
             counter++;
-        });
+        }});
+	
     }
     parsing();
 };
