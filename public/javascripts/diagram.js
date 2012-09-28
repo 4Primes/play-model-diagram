@@ -36,6 +36,9 @@ function checkBoxMaker(time) {
 
 function drawModels(myModels,time) {
 	checkBoxMaker(time);
+
+	
+	var isChecked=new Array();
     var papX = 1200,
         papY = 800;
     var paper = Raphael(0,100, papX, papY),
@@ -48,6 +51,14 @@ function drawModels(myModels,time) {
         borderLine= paper.rect(0,0,paper.width,paper.height),
 		counter = 0;
 	paper.rect(0,0,paper.width,paper.height).attr({"fill":"white"});
+	$("div :checkbox").each(
+    function() 
+    {
+    	isChecked[isChecked.length]=$(this).is(':checked');
+    }
+	);	
+
+
     function MODEL(x, y, packName, z) {
         this.elements = new Array();
         var boxColors=[ "#DBDBD9","#F5F5F5"];
@@ -366,14 +377,12 @@ function drawModels(myModels,time) {
     
   
     function parsing() {
-        
-
-        
 
         $.each(myModels, function(index, item) {
-        	//alert(  $('div input[name=' + item.packageName.split('.').join('_') + ']').is(":checked")  );
-        	//if($(" input:checkbox name:"+item.packageName).is(':checked'))
+        	//alert(isChecked[packages.indexOf(item.packageName.split(".").join('_'))]);
+        	if( isChecked[packages.indexOf(item.packageName)])
         	{
+        		alert(item.packageName);
             		var rad = 2 * Math.PI * counter / modelCounter;
             		models[counter] = new MODEL(30 + 300 + 300 * Math.cos(rad), 300 + 300 * Math.sin(rad),item.packageName,counter);
             		models[counter].header = 1;
