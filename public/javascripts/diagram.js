@@ -4,9 +4,6 @@ var packages=new Array(),
 	paper;
 var papX = 1600,
     papY = 1200;
-
-
-
 function checkBoxMaker(time) {
 	
 	if(!time)
@@ -22,8 +19,6 @@ function checkBoxMaker(time) {
             {
             		packages[packages.length]=item.packageName;
             }
-
-
             if(item.packageName)
             modelCounter++;
         });
@@ -49,7 +44,7 @@ function drawModels(myModels,time) {
         arrows = new Array(),
         diox = new Array(),
 		counter = 0;
-	paper = r=Raphael("holder", 1000.3622,800.09448); 
+	paper =Raphael("holder", 1000.3622,800.09448); 
 	borderLine= paper.rect(0,0,paper.width,paper.height),
 	$("div :checkbox").each(
     function() 
@@ -77,8 +72,10 @@ function drawModels(myModels,time) {
             element.group = this.elements;
             if (newText) 
             		elmCount++;
-            this.p.attr("height", (15 * this.header + 8));
-            this.r.attr("height", ((elmCount) * 15) + 10);          
+            if(element.type!="rect"){
+            this.p.attr( "height", (15 * this.header + 8));
+            this.r.attr( "height", ((elmCount) * 15) + 10); 
+            }         
         };
         this.addMember = function(text, mid, font_size, isNullable, isUnique, isId) {
             var x, y, element, iconU, iconN, iconId, icnLen = 0;
@@ -113,14 +110,14 @@ function drawModels(myModels,time) {
                 });
                 x += 12;
                 newTexts = [true, false]
-                textColors = ["bold", "lighter"]
+                textColors = ["bold", "normal"]
                 textNodes = text.split(' ');
                 var  len=new Array();
                 for (i = 0; i < textNodes.length; ++i) {
                 	len[i]=textNodes[i].length;
                     textNodes[i] = paper.text(x+2, y+2, textNodes[i]).attr({
                         'text-anchor': 'start',
-                        'font-family': "sourceCodePro",
+                        'font-family': "courier new",
                         'font-weight': textColors[i],
                         cursor: "move"
                     });
@@ -141,7 +138,7 @@ function drawModels(myModels,time) {
                 element = paper.text(x, y, text).attr({
                     'text-anchor': 'start',
                     'font-size': font_size,
-                    'font-family': "sourceCodePro",
+                    'font-family': "courier new",
                     'fill':'white',
                     cursor: "move"
                 });
@@ -168,7 +165,7 @@ function drawModels(myModels,time) {
                     "font-weight": "bold",
                     'text-anchor': 'start',
                     'font-size': font_size,
-                    'font-family': "sourceCodePro",
+                    'font-family': "courier new",
                     'fill' : "white",
                     'title':packName,
                     cursor: "move"
@@ -196,7 +193,7 @@ function drawModels(myModels,time) {
             cursor: "move"
         });
         this.p.attr({ "title": packName} );
-       this.add(this.r);
+        this.add(this.r);
         this.add(this.p);
     };
 
@@ -243,13 +240,13 @@ function drawModels(myModels,time) {
         var modelBox = new Array(),
             sx, sy, ox, kx, ex, ey;
 
-        limit = 1200;
+        limit = paper.width;
         modelBox[0] = models[connections[a][0]].r.getBBox();
         modelBox[1] = models[connections[a][2]].r.getBBox();
         sy = modelBox[0].y + connections[a][1] * 15;
         ey = modelBox[1].y + connections[a][4];
         if (connections[a][5] == "extend") {
-            limit = 800;
+            limit = paper.height;
             sy = modelBox[0].width / 2 + modelBox[0].x;
             ey = modelBox[1].x + connections[a][4] * 2;
             var backup = modelBox[0].x;
@@ -378,7 +375,7 @@ function drawModels(myModels,time) {
         	'text-anchor': 'start'
         });
         information.attr("font-size", "11px" );
-        information.attr("font-family", "sourceCodePro" );
+        information.attr("font-family", "courier new" );
         information.attr("font-weight", "bold");
         var infoColor=paper.rect(72,2+14*x,15,10);
         infoColor.attr('fill',color[x]);
